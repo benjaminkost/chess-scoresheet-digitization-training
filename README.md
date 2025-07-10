@@ -1,0 +1,1 @@
+# chess-scoresheet-digitization-training
