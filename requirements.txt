@@ -1,5 +1,6 @@
 fastapi
 uvicorn
+datasets
 python-multipart
 aiofiles
 click
@@ -13,7 +14,6 @@ Pillow
 scikit_learn
 starlette
 transformers
-zenml
 dagshub
 seaborn
 ibm_watson_machine_learning
@@ -23,3 +23,4 @@ pre-commit
 matplotlib
 joblib
 pyyaml
+torch

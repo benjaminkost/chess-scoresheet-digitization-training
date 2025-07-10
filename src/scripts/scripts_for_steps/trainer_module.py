@@ -1,6 +1,6 @@
 from datasets import Dataset
-from app.ml.classes_for_steps.data_module import DataModule
-from app.ml.classes_for_steps.hyperparameter_util import ModelHyperparameter
+from data_module import DataModule
+from hyperparameter_util import ModelHyperparameter
 
 class Trainer(ModelHyperparameter):
     """The base class for training models with data"""

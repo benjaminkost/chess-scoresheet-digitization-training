@@ -1,18 +1,9 @@
 import os
 import dagshub
-import click
 from dotenv import load_dotenv
+from src.scripts.deployment_pipeline import deployment_pipeline
 
-from app.ml.pipelines import deployment_pipeline
-
-@click.command()
-@click.option(
-    "--stop-service",
-    is_flag=True,
-    default=False,
-    help="Stop the prediction service when done",
-)
-def run_main(stop_service: bool):
+def run_main():
     """Run the image predictor deployment pipeline"""
     # load enviroment variables
     load_dotenv()

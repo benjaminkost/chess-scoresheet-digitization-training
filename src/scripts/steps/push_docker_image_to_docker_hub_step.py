@@ -2,12 +2,9 @@ import logging
 from pathlib import Path
 import subprocess
 
-from zenml import step
-
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-@step
 def push_docker_image_to_docker_hub():
     script_path = Path(__file__).parent.parent / "images_push_to_dockerhub.sh"
 

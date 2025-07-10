@@ -3,10 +3,8 @@ import os
 import subprocess
 import mlflow
 from dotenv import load_dotenv
-from zenml import step
 import dagshub
 
-@step
 def dockerize_mlflow_model_with_cli(docker_image_name, mlflow_model_name: str):
     dagshub.init(repo_owner=os.environ["DAGSHUB_MLFLOW_TRACKING_USERNAME"], repo_name=os.environ["DAGSHUB_REPOSITORY"], mlflow=True)
 
@@ -45,7 +43,6 @@ def dockerize_mlflow_model_with_cli(docker_image_name, mlflow_model_name: str):
     else:
         logging.info(f"Creating docker image {docker_image_name} was successful:\n{result.stderr}")
 
-@step
 def dockerize_mlflow_model_with_python(docker_image_name, mlflow_model_name: str):
     dagshub.init(repo_owner=os.environ["DAGSHUB_MLFLOW_TRACKING_USERNAME"], repo_name=os.environ["DAGSHUB_REPOSITORY"], mlflow=True)
 

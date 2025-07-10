@@ -2,8 +2,8 @@ import torch
 from torch import nn
 from transformers import TrOCRProcessor, VisionEncoderDecoderModel
 
-from app.ml.classes_for_steps.evaluation_graphs import ProgressBoard
-from app.ml.classes_for_steps.hyperparameter_util import ModelHyperparameter
+from evaluation_graphs import ProgressBoard
+from hyperparameter_util import ModelHyperparameter
 
 # Base classes
 class Module(nn.Module, ModelHyperparameter):

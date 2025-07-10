@@ -2,13 +2,11 @@ import logging
 import os
 import dagshub
 import mlflow
-from zenml import step
 from dotenv import load_dotenv
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-@step
 def log_register_custom_model(python_model, conda_env, artifacts, artifact_path, registered_model_name) -> None:
     # Load enviroment variables
     load_dotenv()

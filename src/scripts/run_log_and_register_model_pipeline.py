@@ -1,17 +1,17 @@
-from app.ml.steps import log_register_custom_model
+from steps import log_register_custom_model
 from sys import version_info
-from app.ml.mlflow_models import HFTransformerImageModelWrapper
+from mlflow_models.trocr_mlflow_model import HFTransformerImageModelWrapper
 
 def log_and_register_model_pipeline():
     # Set model parameter
-    MODELS_DIR = "models"
+    MODELS_DIR = "../../models"
 
     # Set python version
     PYTHON_VERSION = "{major}.{minor}".format(major=version_info.major, minor=version_info.minor)
 
     # Define artifacts
     artifacts = {
-        "hf_model" : "./mlflow_model_configs/mlflow_model_config.json"
+        "hf_model" : "./src/scripts/mlflow_models/mlflow_model_config.json"
     }
     # conda enviroment
     conda_env = {
@@ -33,7 +33,6 @@ def log_and_register_model_pipeline():
                     "scikit_learn==1.6.1",
                     "starlette==0.46.2",
                     "transformers==4.51.3",
-                    "zenml==0.82.1"
                 ]
             }
         ]
