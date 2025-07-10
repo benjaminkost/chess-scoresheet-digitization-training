@@ -1,0 +1,70 @@
+name: "Konfigurations Aufgabe"
+description: "Erstelle eine Aufgabe für Git- und Projektstruktur-bezogene Themen."
+title: "[Git/Projekt] <Kurze Beschreibung der Aufgabe>"
+labels: ["git", "projektstruktur"]
+assignees:
+  - ""
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Bitte fülle die folgenden Details zur Aufgabe aus:**
+  
+  - type: input
+    id: problem_description
+    attributes:
+      label: "Problem oder Aufgabe"
+      description: "Beschreibe das Problem oder die Aufgabe, die erledigt werden soll."
+      placeholder: "z. B. Repository-Struktur überarbeiten, Branching-Strategie definieren..."
+    validations:
+      required: true
+  
+  - type: textarea
+    id: expected_outcome
+    attributes:
+      label: "Erwartetes Ergebnis"
+      description: "Was soll am Ende erreicht sein?"
+      placeholder: "z. B. ein strukturierteres Repository, klarere Commit-Richtlinien..."
+    validations:
+      required: true
+  
+  - type: textarea
+    id: steps_to_reproduce
+    attributes:
+      label: "Reproduktionsschritte (falls zutreffend)"
+      description: "Falls es sich um ein Problem handelt, liste die Schritte zur Reproduktion auf."
+      placeholder: "1. ...\n2. ...\n3. ..."
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "Priorität"
+      description: "Wie wichtig ist diese Aufgabe?"
+      options:
+        - "Niedrig"
+        - "Mittel"
+        - "Hoch"
+    validations:
+      required: true
+  
+  - type: checkboxes
+    id: additional_info
+    attributes:
+      label: "Zusätzliche Informationen"
+      description: "Gibt es weitere wichtige Punkte?"
+      options:
+        - label: "Ich habe relevante Dokumentation geprüft."
+        - label: "Ich habe überprüft, ob es ähnliche Issues gibt."
+        - label: "Ich habe einen Vorschlag zur Lösung."
+  
+  - type: textarea
+    id: additional_notes
+    attributes:
+      label: "Weitere Notizen"
+      description: "Zusätzliche Anmerkungen oder Links zur Dokumentation."
+      placeholder: "z. B. Links zu ähnlichen Issues, relevante Dokumentationen..."
+    validations:
+      required: false
