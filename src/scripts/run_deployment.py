@@ -1,7 +1,7 @@
 import os
 import dagshub
 from dotenv import load_dotenv
-from src.scripts.deployment_pipeline import deployment_pipeline
+from src.scripts.pipelines.deployment_pipeline import deployment_pipeline
 
 def run_main():
     """Run the image predictor deployment pipeline"""

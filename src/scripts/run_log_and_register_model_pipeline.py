@@ -1,17 +1,22 @@
-from steps import log_register_custom_model
+from pathlib import Path
+
+from steps.log_register_custom_model import log_register_custom_model
 from sys import version_info
 from mlflow_models.trocr_mlflow_model import HFTransformerImageModelWrapper
 
 def log_and_register_model_pipeline():
     # Set model parameter
-    MODELS_DIR = "../../models"
+    MODELS_DIR = "model"
 
     # Set python version
     PYTHON_VERSION = "{major}.{minor}".format(major=version_info.major, minor=version_info.minor)
 
     # Define artifacts
+    current_path = Path.cwd()
+    path_to_hf_model_config = str(current_path / "mlflow_models" / "mlflow_model_configs" / "mlflow_model_config.json")
+
     artifacts = {
-        "hf_model" : "./src/scripts/mlflow_models/mlflow_model_config.json"
+        "hf_model" : path_to_hf_model_config
     }
     # conda enviroment
     conda_env = {

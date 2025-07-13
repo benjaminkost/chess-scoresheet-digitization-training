@@ -3,6 +3,7 @@ import os
 import dagshub
 import mlflow
 from dotenv import load_dotenv
+from pathlib import Path
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -14,6 +15,9 @@ def log_register_custom_model(python_model, conda_env, artifacts, artifact_path,
     # Set up mlflow experiment enviroment to dagshub
     dagshub.init(repo_owner=os.environ["DAGSHUB_MLFLOW_TRACKING_USERNAME"], repo_name=os.environ["DAGSHUB_REPOSITORY"], mlflow=True)
 
+    # code path
+    code_path = str(Path.cwd() / "mlflow_models")
+
     with mlflow.start_run():
         logger.info(f"MLflow tracking URI: {mlflow.get_tracking_uri()}")
         # log the Python function model
@@ -21,9 +25,7 @@ def log_register_custom_model(python_model, conda_env, artifacts, artifact_path,
             python_model=python_model,
             conda_env=conda_env,
             artifacts=artifacts,
-            code_paths=["../mlflow_models"],
+            code_paths=[code_path],
             artifact_path=artifact_path,
             registered_model_name=registered_model_name,
         )
-
-        # infer_code_paths=True,
