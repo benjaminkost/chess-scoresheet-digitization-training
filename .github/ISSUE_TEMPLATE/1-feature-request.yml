@@ -1,0 +1,48 @@
+name: "✨ Feature Request"
+description: "Schlage eine neue Funktion oder Verbesserung vor."
+title: "[Feature] "
+labels:
+  - "enhancement"
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 📝 Feature Beschreibung
+        Eine klare und prägnante Beschreibung der gewünschten Funktion oder Verbesserung.
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: "💡 Motivation und Nutzen"
+      description: "Erkläre, warum diese Funktion nützlich ist und welche Probleme sie löst."
+      placeholder: "Dieses Feature würde helfen, indem..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: "🚀 Vorgeschlagene Lösung"
+      description: "Beschreibe eine mögliche Umsetzung oder Herangehensweise."
+      placeholder: "Eine mögliche Lösung wäre..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "🔄 Alternativen"
+      description: "Hast du alternative Lösungen in Betracht gezogen? Falls ja, beschreibe sie hier."
+      placeholder: "Eine Alternative könnte sein..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional_info
+    attributes:
+      label: "📎 Zusätzliche Informationen"
+      description: "Füge weitere Details, Screenshots oder Beispiele hinzu."
+    validations:
+      required: false

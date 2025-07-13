@@ -1,0 +1,49 @@
+name: "🧪 Unit Test Request"
+description: "Schlage einen neuen Unit Test vor oder melde fehlende Tests."
+title: "[Test] "
+labels:
+  - "test"
+  - "enhancement"
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 📝 Unit Test Beschreibung
+        Eine klare und prägnante Beschreibung des benötigten Unit Tests.
+
+  - type: textarea
+    id: test_scenario
+    attributes:
+      label: "🔍 Test-Szenario"
+      description: "Beschreibe das Szenario, das der Test abdecken soll."
+      placeholder: "Der Test sollte sicherstellen, dass..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: "✅ Erwartetes Verhalten"
+      description: "Beschreibe, was der Test validieren oder sicherstellen soll."
+      placeholder: "Der Test sollte erwarten, dass..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: test_implementation
+    attributes:
+      label: "🛠 Vorschlag zur Implementierung"
+      description: "Falls möglich, gib eine Idee oder ein Beispiel für die Testimplementierung an."
+      placeholder: "Ein möglicher Test könnte folgendermaßen aussehen..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional_info
+    attributes:
+      label: "📎 Zusätzliche Informationen"
+      description: "Füge weitere relevante Informationen, Referenzen oder Beispiele hinzu."
+    validations:
+      required: false

@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "chess-scoresheet-digitization-training"
+version = "0.0.1"
+description = ""
+authors = ["Benjamin Kostka mail@ben-kostka.de"]
+readme = "README.md"
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pytest = "*"
+fastapi = "*"
+uvicorn = "*"
+python-multipart = "*"
+aiofiles = "*"
+mlflow = "2.21.2"
+mlflow_skinny = "2.21.2"
+numpy = "*"
+opencv-python = "*"
+pandas = "*"
+starlette = "*"
+dagshub = "*"
+datasets = "*"
+transformers = "*"
+seaborn = "*"
+ibm_watson_machine_learning = "*"
+pre-commit = "*"
+matplotlib = "*"
+joblib = "*"
+pyyaml = "*"
+torch = "*"
+dotenv = "*"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
