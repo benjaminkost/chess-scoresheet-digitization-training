@@ -84,8 +84,8 @@ class SimpleDataSplittingStrategy(DataSplittingStrategy):
                 raise KeyError(f"Target-column '{target_column}' not found in Dataset")
 
             # Extract data
-            X = dataset[split][feature_column]
-            y = dataset[split][target_column]
+            X = list(dataset[split][feature_column])
+            y = list(dataset[split][target_column])
 
             # Check if the data is not empty
             if len(X) == 0 or len(y) == 0:

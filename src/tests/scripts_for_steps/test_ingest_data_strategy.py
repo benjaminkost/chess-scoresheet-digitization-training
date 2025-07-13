@@ -1,4 +1,7 @@
 import unittest
+
+from datasets import Column
+
 from  src.scripts.scripts_for_steps.ingest_data_strategy import HuggingFaceImageDataIngestorStrategy
 from PIL import Image
 
@@ -31,12 +34,15 @@ class ImageDataIngestorTest(unittest.TestCase):
     def test_ingest_image_dataset_from_huggingface_BenjaminKost_unprocessed_hcs_Dataset_csv_and_check_datatypes_of_column_image_Returns_list(self):
 
         # Then
-        self.assertIsInstance(self.dataset["train"]["image"], list)
+        self.assertIsInstance(self.dataset["train"]["image"], Column)
+        self.assertIsInstance(self.dataset["train"]["image"][0], Image.Image)
 
     def test_ingest_image_dataset_from_huggingface_BenjaminKost_unprocessed_hcs_Dataset_csv_and_check_datatypes_of_column_text_Returns_list(self):
 
         # Then
-        self.assertIsInstance(self.dataset["train"]["labels"], list)
+        self.assertIsInstance(self.dataset["train"]["labels"], Column)
+        self.assertIsInstance(self.dataset["train"]["labels"][0], list)
+        self.assertIsInstance(self.dataset["train"]["labels"][0][0], str)
 
 
 if __name__ == '__main__':
