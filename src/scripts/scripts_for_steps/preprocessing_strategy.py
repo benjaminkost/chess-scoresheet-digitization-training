@@ -29,12 +29,20 @@ handler.setFormatter(formatter)
 # Handler for Logger added
 logger.addHandler(handler)
 
+# Interfaces
 class PreprocessingStrategy(ABC):
     @abstractmethod
     def preprocess_dataset(self, dataset):
         """Abstract method to preprocess an image dataset"""
         pass
 
+class EncodingStrategy(ABC):
+    @abstractmethod
+    def encode_dataset(self, dataset):
+        """Abstract method to encode an image dataset so the images and the labels are encoded"""
+        pass
+
+# Utils
 # Enums
 class ThresholdMethod(Enum):
     # How to apply threshold method
@@ -42,6 +50,7 @@ class ThresholdMethod(Enum):
     ADAPTIVE_THRESH_MEAN_C = cv2.ADAPTIVE_THRESH_MEAN_C
     ADAPTIVE_THRESH_GAUSSIAN_C = cv2.ADAPTIVE_THRESH_GAUSSIAN_C
 
+# Implementations
 class HuggingFacePreprocessingStrategy(PreprocessingStrategy):
 
     def __init__(self, kernelsize_gaussianBlur:tuple[int, int] = (5, 5),
@@ -657,3 +666,7 @@ class HuggingFacePreprocessingStrategy(PreprocessingStrategy):
         cut_out_image = image.crop((top_left_corner[0], top_left_corner[1], bottom_right_corner[0], bottom_right_corner[1]))
 
         return cut_out_image
+
+class TrOCREncoder(EncodingStrategy):
+    def __init__(self):
+        pass
