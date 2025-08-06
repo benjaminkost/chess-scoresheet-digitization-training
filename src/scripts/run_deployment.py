@@ -8,17 +8,9 @@ def run_main():
     # load enviroment variables
     load_dotenv()
 
-    env_model_name = (os.environ["MODEL_NAMES"]
-                  .replace("\"", "")
-                  .replace("(", "")
-                  .replace("(", "")
-                  .replace(")", ""))
+    env_model_name = os.environ["MODEL_NAME"]
 
-    env_images = (os.environ["IMAGES"]
-                  .replace("\"", "")
-                  .replace("(", "")
-                  .replace("(", "")
-                  .replace(")", ""))
+    env_images = os.environ["DOCKER_IMAGE_NAME"]
 
     model_name = env_model_name
     docker_image_name = env_images
