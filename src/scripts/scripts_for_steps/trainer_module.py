@@ -77,7 +77,7 @@ class Trainer(ABC):
         pass
 
     @abstractmethod
-    def train(self):
+    def train(self, run_name: str, experiment_name:str, model_flavor="pytorch", tags=None):
         pass
 
     @abstractmethod
@@ -262,13 +262,47 @@ class CNNTransformerTrainer(TransformerTrainer):
 
         return res_dataset
 
-    def train(self, run_name: str, experiment_name:str, ):
-        """
-        Train the model.
-        """
+    def train(self, run_name: str, experiment_name:str, model_flavor="pytorch", tags=None):
+        logger.info(f"MLflow uri is: {mlflow.get_tracking_uri()}")
 
-        with mlflow.start_run(run_name=self._trainer.name) as mlrun:
-            mlflow.log_params()
+        logger.info(f"Training model with flavor {model_flavor}")
+
+        mlflow.set_experiment(experiment_name)
+
+        logger.info(f"MLflow experiment \"Experiment\" {experiment_name} was created")
+
+        with mlflow.start_run(run_name=run_name):
+            # Log parameters
+            if self.get_training_args() is not None:
+                for arg_name, arg_value in vars(self.get_training_args()).items():
+                    try:
+                        mlflow.log_params(arg_name, arg_value)
+
+                        logger.info(f"Logged parameter {arg_name} was set to {arg_value}")
+                    except:
+                        continue
+
+            # Load model
+            model = self.get_model()
+
+            logger.info(f"Model was loaded")
+
+            # Train model
+            logger.info(f"Training starting")
+            self.get_model().train()
+
+            logger.info(f"Model was trained")
+
+            # Log model
+            model_metadata = mlflow.pytorch.log_model(model, artifact_path="model")
+
+            logger.info(f"Model was logged with metadata: {model_metadata}")
+
+            # Set tags
+            if tags is not None:
+                for index, tag in enumerate(tags):
+                    mlflow.log_metric(tag, tags[index])
+
 
     def save_model(self):
         pass
