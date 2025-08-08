@@ -1,6 +1,9 @@
 import logging
 from abc import ABC, abstractmethod
-from src.scripts.scripts_for_steps.data_module import DataModule
+
+import mlflow
+
+from src.scripts.scripts_for_steps.data_module import DataModule, DataModuleTransformer
 
 # Logger definition
 # ANSI Escape Code for white letters
@@ -37,35 +40,19 @@ class Trainer(ABC):
         pass
 
     @abstractmethod
-    def get_features_train(self):
+    def get_train_dataset(self):
         pass
 
     @abstractmethod
-    def set_features_train(self, features_train):
+    def set_train_dataset(self, train_dataset):
         pass
 
     @abstractmethod
-    def get_features_test(self):
+    def get_test_dataset(self):
         pass
 
     @abstractmethod
-    def set_features_test(self, features_test):
-        pass
-
-    @abstractmethod
-    def get_labels_train(self):
-        pass
-
-    @abstractmethod
-    def set_labels_train(self, labels_train):
-        pass
-
-    @abstractmethod
-    def get_labels_test(self):
-        pass
-
-    @abstractmethod
-    def set_labels_test(self, labels_test):
+    def set_test_dataset(self, test_dataset):
         pass
 
     # business logic
@@ -78,11 +65,15 @@ class Trainer(ABC):
         pass
 
     @abstractmethod
-    def encode_labels(self):
+    def encode_labels(self, split, feature_column, target_column):
         pass
 
     @abstractmethod
-    def split_train_test(self):
+    def split_train_test(self, split, feature_column, target_column):
+        pass
+
+    @abstractmethod
+    def convert_feature_label_lists_into_dict(self, feature_list: list, label_list: list, feature_name: str, label_name: str):
         pass
 
     @abstractmethod
@@ -94,6 +85,25 @@ class Trainer(ABC):
         pass
 
 class TransformerTrainer(Trainer, ABC):
+
+    @abstractmethod
+    def __init__(self,
+                 model,
+                 data_module: DataModuleTransformer,
+                 processor,
+                 trainer=None,
+                 training_args=None
+                 ):
+        self._model = model
+        self._data_module = data_module
+        self._processor = processor
+        self._trainer = trainer
+        self._training_args = training_args
+
+        # set later
+        self._dataset = None
+        self._train_dataset = None
+        self._test_dataset = None
 
     # getter/setter
     @abstractmethod
@@ -126,7 +136,7 @@ class CNNTransformerTrainer(TransformerTrainer):
 
     def __init__(self,
                  model,
-                 data_module: DataModule,
+                 data_module: DataModuleTransformer,
                  processor,
                  trainer=None,
                  training_args=None
@@ -139,10 +149,8 @@ class CNNTransformerTrainer(TransformerTrainer):
 
         # set later
         self._dataset = None
-        self._features_train = None
-        self._features_test = None
-        self._labels_train = None
-        self._labels_test = None
+        self._train_dataset = None
+        self._test_dataset = None
 
     def get_trainer(self):
         pass
@@ -168,28 +176,16 @@ class CNNTransformerTrainer(TransformerTrainer):
     def set_dataset(self, dataset):
         pass
 
-    def get_features_train(self):
+    def get_train_dataset(self):
         pass
 
-    def set_features_train(self, features_train):
+    def set_train_dataset(self, train_dataset):
         pass
 
-    def get_features_test(self):
+    def get_test_dataset(self):
         pass
 
-    def set_features_test(self, features_test):
-        pass
-
-    def get_labels_train(self):
-        pass
-
-    def set_labels_train(self, labels_train):
-        pass
-
-    def get_labels_test(self):
-        pass
-
-    def set_labels_test(self, labels_test):
+    def set_test_dataset(self, test_dataset):
         pass
 
     def get_model(self):
@@ -222,18 +218,57 @@ class CNNTransformerTrainer(TransformerTrainer):
 
         logger.info(f"Dataset was preprocessed")
 
-    def encode_labels(self):
+    def encode_labels(self, split, feature_column, target_column):
         """
         Encode the labels so that the labels are correctly formatted for training.
-
+        This reassigns the _dataset attribute.
 
         """
+        encoded_dataset = self._data_module.encode_dataset(self.get_dataset(), split, feature_column, target_column)
 
-    def split_train_test(self):
-        pass
+        self.set_dataset(encoded_dataset)
 
-    def train(self):
-        pass
+        logger.info(f"Dataset was encoded")
+
+    def split_train_test(self, split, feature_column, target_column):
+        """
+        Split the dataset into train and test sets.
+
+        """
+        try:
+            X_train, X_test, y_train, y_test = self._data_module.split_data(self.get_dataset(), split, feature_column, target_column)
+
+            train_dataset = self.convert_feature_label_lists_into_dict(X_train, y_train, feature_column, target_column)
+            test_dataset = self.convert_feature_label_lists_into_dict(X_test, y_test, feature_column, target_column)
+
+            self.set_train_dataset(train_dataset)
+            self.set_test_dataset(test_dataset)
+        except Exception as e:
+            logger.error(f"Dataset was not found, cannot split into train and test sets. Error: {e}")
+
+    def convert_feature_label_lists_into_dict(self, feature_list: list, label_list: list, feature_name: str, label_name: str):
+        """
+        Convert the feature list and the corresponding label list into a dictionary.
+
+        :param feature_list: list of pixel values per image
+        :param label_list: list of tokens for each label
+
+        """
+        res_dataset = {}
+
+        for feature, label in zip(feature_list, label_list):
+            res_dataset[feature_name] = feature
+            res_dataset[label_name] = label
+
+        return res_dataset
+
+    def train(self, run_name: str, experiment_name:str, ):
+        """
+        Train the model.
+        """
+
+        with mlflow.start_run(run_name=self._trainer.name) as mlrun:
+            mlflow.log_params()
 
     def save_model(self):
         pass
