@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 import mlflow
 
 from src.scripts.scripts_for_steps.data_module import DataModule, DataModuleTransformer
+from src.scripts.scripts_for_steps.hyperparameter_util import ModelHyperparameters
 
 # Logger definition
 # ANSI Escape Code for white letters
@@ -25,7 +26,7 @@ handler.setFormatter(formatter)
 # Handler for Logger added
 logger.addHandler(handler)
 
-class Trainer(ABC):
+class Trainer(ABC, ModelHyperparameters):
     #getter/setter
     @abstractmethod
     def get_model(self):
@@ -138,14 +139,18 @@ class CNNTransformerTrainer(TransformerTrainer):
                  model,
                  data_module: DataModuleTransformer,
                  processor,
-                 trainer=None,
-                 training_args=None
+                 trainer,
+                 training_args,
+                 model_config
                  ):
+        # save hyperparameters
+        self.save_hyperparameters(ignore=["model", "data_module", "processor", "trainer"]) # save training_args
+
+        # Save
         self._model = model
         self._data_module = data_module
         self._processor = processor
         self._trainer = trainer
-        self._training_args = training_args
 
         # set later
         self._dataset = None

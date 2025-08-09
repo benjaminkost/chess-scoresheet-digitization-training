@@ -1,8 +1,18 @@
 import inspect
+from abc import abstractmethod, ABC
 
 
-class ModelHyperparameter:
-    """The base class for hyperparameters."""
+# interface
+class Hyperparameters(ABC):
+    @abstractmethod
+    def save_hyperparameters(self):
+        """
+        Saves all parameters passed into a class as attributes of that class
+        """
+        pass
+
+# Implementation
+class ModelHyperparameters(Hyperparameters):
     def save_hyperparameters(self, ignore=[]):
         frame = inspect.currentframe().f_back
         _, _, _, local_vars = inspect.getargvalues(frame)
