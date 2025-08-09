@@ -1,5 +1,7 @@
 import logging
 from abc import ABC, abstractmethod
+
+from datasets import Dataset
 from evaluate import load
 import mlflow
 from transformers import TrainingArguments, ProcessorMixin, VisionEncoderDecoderModel, Trainer as ML_Trainer
@@ -48,6 +50,8 @@ class TransformerTrainer(Trainer, ABC):
 
     @abstractmethod
     def __init__(self,
+                 train_dataset: Dataset,
+                 test_dataset: Dataset,
                  model,
                  processor,
                  trainer=None,
@@ -58,10 +62,9 @@ class TransformerTrainer(Trainer, ABC):
         self._trainer = trainer
         self._training_args = training_args
 
-        # set later
-        self._dataset = None
-        self._train_dataset = None
-        self._test_dataset = None
+        # Set Datasets
+        self._train_dataset = train_dataset
+        self._test_dataset = test_dataset
 
     # getter/setter
     @abstractmethod
@@ -89,6 +92,8 @@ class TransformerTrainer(Trainer, ABC):
 class CNNTransformerTrainer(TransformerTrainer):
 
     def __init__(self,
+                 train_dataset: Dataset,
+                 test_dataset: Dataset,
                  model: VisionEncoderDecoderModel,
                  processor: ProcessorMixin,
                  trainer: ML_Trainer,
@@ -105,9 +110,8 @@ class CNNTransformerTrainer(TransformerTrainer):
         self._trainer = trainer
 
         # set later
-        self._dataset = None
-        self._train_dataset = None
-        self._test_dataset = None
+        self._train_dataset = train_dataset
+        self._test_dataset = test_dataset
 
         # Save hyperparameters
         self.save_hyperparameters(ignore=["model", "data_module", "processor", "trainer"], additional=training_args.to_dict())
