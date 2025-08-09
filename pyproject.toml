@@ -32,6 +32,7 @@ torch = "*"
 dotenv = "*"
 notebook = "^7.4.4"
 ipywidgets = "^8.1.7"
+evaluate = "^0.4.5"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

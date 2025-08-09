@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 
 import PIL
+import torch
 from PIL import Image, PngImagePlugin
 import cv2
 import numpy as np
@@ -29,12 +30,20 @@ handler.setFormatter(formatter)
 # Handler for Logger added
 logger.addHandler(handler)
 
+# Interfaces
 class PreprocessingStrategy(ABC):
     @abstractmethod
     def preprocess_dataset(self, dataset):
         """Abstract method to preprocess an image dataset"""
         pass
 
+class EncodingStrategy(ABC):
+    @abstractmethod
+    def encode_dataset(self, dataset, split_column: str, feature_column: str, target_column: str):
+        """Abstract method to encode an image dataset so the images and the labels are encoded"""
+        pass
+
+# Utils
 # Enums
 class ThresholdMethod(Enum):
     # How to apply threshold method
@@ -42,6 +51,7 @@ class ThresholdMethod(Enum):
     ADAPTIVE_THRESH_MEAN_C = cv2.ADAPTIVE_THRESH_MEAN_C
     ADAPTIVE_THRESH_GAUSSIAN_C = cv2.ADAPTIVE_THRESH_GAUSSIAN_C
 
+# Implementations
 class HuggingFacePreprocessingStrategy(PreprocessingStrategy):
 
     def __init__(self, kernelsize_gaussianBlur:tuple[int, int] = (5, 5),
@@ -657,3 +667,55 @@ class HuggingFacePreprocessingStrategy(PreprocessingStrategy):
         cut_out_image = image.crop((top_left_corner[0], top_left_corner[1], bottom_right_corner[0], bottom_right_corner[1]))
 
         return cut_out_image
+
+class TrOCREncoder(EncodingStrategy):
+    def __init__(self, processor, max_target_length=128):
+        self._processor = processor
+        self._max_target_length = max_target_length
+
+    def encode_dataset(self, dataset, split_column: str, feature_column: str, target_column: str):
+        """
+        Uses the processor to encode the images as pixel values and the labels as a list of tokens (integers).
+
+        :param dataset: image dataset with strings as labels
+        :return: dataset with encoded images and labels
+        """
+
+        # Guard Clauses
+        if dataset is None:
+            raise ValueError("Dataset can not be None")
+        if not isinstance(dataset, DatasetDict) and not isinstance(dataset, Dataset):
+            raise ValueError("Dataset must be a Dataset object, the dataset is type of: " + str(type(dataset)))
+        if not isinstance(dataset["train"]["image"][0], (Image.Image, PngImagePlugin.PngImageFile)):
+            raise ValueError("Dataset must contain images, but is type of: " + str(type(dataset["train"]["image"][0])))
+
+        dataset_of_split = dataset[split_column]
+
+        count_not_processed_images = 0
+
+        for i in range(0, len(dataset_of_split)):
+            try:
+                # prepare images (i.e. resize + normalize)
+                image = dataset_of_split[i][feature_column].convert("RGB")
+                pixel_values = self._processor(image, return_tensors="pt").pixel_values
+                dataset_of_split[i][target_column] = pixel_values.squeeze()
+
+                # add tokens (input_ids) by encoding the labels
+                text = dataset_of_split[i][target_column]
+
+                labels = self._processor.tokenize(text,
+                                                  padding="max_length",
+                                                  padding_length=self._max_target_length).input_ids
+
+                # important: make sure that PAD tokens are ignored by the loss function
+                labels = [label if label != self._processor.tokenizer.pad_token_id else -100 for label in labels]
+
+                dataset_of_split[i][target_column] = torch.tensor(labels)
+
+                logger.info(f"Encoding image with index {i} successful.")
+
+            except Exception as e:
+                count_not_processed_images += 1
+                logger.error(f"The image with the index {i} could not be encoded.")
+
+        return dataset

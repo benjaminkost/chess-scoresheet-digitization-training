@@ -1,7 +1,7 @@
-from hyperparameter_util import ModelHyperparameter
+from hyperparameter_util import ModelHyperparameters
 
 
-class ProgressBoard(ModelHyperparameter):  #@save
+class ProgressBoard(ModelHyperparameters):  #@save
     """The board that plots data points in animation."""
     def __init__(self, xlabel=None, ylabel=None, xlim=None,
                  ylim=None, xscale='linear', yscale='linear',
