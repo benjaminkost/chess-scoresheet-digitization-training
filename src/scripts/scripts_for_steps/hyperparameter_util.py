@@ -13,9 +13,10 @@ class Hyperparameters(ABC):
 
 # Implementation
 class ModelHyperparameters(Hyperparameters):
-    def save_hyperparameters(self, ignore=[]):
+    def save_hyperparameters(self, ignore=[], additional={}):
         frame = inspect.currentframe().f_back
         _, _, _, local_vars = inspect.getargvalues(frame)
-        self.hparams = {k:v for k, v in local_vars.items()
+        all_vars = local_vars | additional
+        self.hparams = {k:v for k, v in all_vars.items()
                         if k not in set(ignore+['self']) and not k.startswith('_')}
         for k, v in self.hparams.items(): setattr(self, k, v)
