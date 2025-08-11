@@ -1,6 +1,5 @@
 import logging
 
-from src.scripts.scripts_for_steps.data_splitter_strategy import SimpleDataSplittingStrategy
 from src.scripts.scripts_for_steps.preprocessing_strategy import EncodingStrategy, TrOCREncoder
 
 WHITE = "\033[37m"

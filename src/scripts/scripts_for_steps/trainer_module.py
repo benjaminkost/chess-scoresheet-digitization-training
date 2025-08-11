@@ -4,7 +4,8 @@ from abc import ABC, abstractmethod
 from datasets import Dataset
 from evaluate import load
 import mlflow
-from transformers import TrainingArguments, ProcessorMixin, VisionEncoderDecoderModel, Trainer as ML_Trainer
+from transformers import TrainingArguments, ProcessorMixin, VisionEncoderDecoderModel, Trainer as ML_Trainer, \
+    Seq2SeqTrainingArguments, default_data_collator, Seq2SeqTrainer
 from src.scripts.scripts_for_steps.hyperparameter_util import ModelHyperparameters
 
 # Logger definition
@@ -27,6 +28,7 @@ handler.setFormatter(formatter)
 # Handler for Logger added
 logger.addHandler(handler)
 
+
 class Trainer(ABC, ModelHyperparameters):
     #getter/setter
     @abstractmethod
@@ -43,10 +45,11 @@ class Trainer(ABC, ModelHyperparameters):
 
     # business logic
     @abstractmethod
-    def train(self, run_name: str, experiment_name:str, model_flavor="pytorch", tags=None):
+    def train(self, run_name: str, experiment_name: str, model_flavor="pytorch", tags=None):
         pass
 
-class TransformerTrainer(Trainer, ABC):
+
+class TransformerTrainerWrapper(Trainer, ABC):
 
     @abstractmethod
     def __init__(self,
@@ -89,15 +92,37 @@ class TransformerTrainer(Trainer, ABC):
         """
         pass
 
-class CNNTransformerTrainer(TransformerTrainer):
+    def set_up_trainer_args_class(self):
+        """
+        Set up a trainer args class from a library like huggingfaces "transformers"
+        """
+        pass
+
+    def set_up_trainer_class(self):
+        """
+        Set up a trainer class from a library like huggingfaces "transformers"
+        """
+        pass
+
+
+class CNNTransformerTrainer(TransformerTrainerWrapper):
 
     def __init__(self,
                  train_dataset: Dataset,
                  test_dataset: Dataset,
                  model: VisionEncoderDecoderModel,
                  processor: ProcessorMixin,
-                 trainer: ML_Trainer,
-                 training_args: TrainingArguments,
+                 predict_with_generate:bool,
+                 eval_strategy:str,
+                 per_device_train_batch_size:int,
+                 per_device_eval_batch_size:int,
+                 fp16:bool,
+                 output_dir:str,
+                 logging_steps:int,
+                 save_steps:int,
+                 eval_steps:int,
+                 disable_tqdm:bool,
+                 report_to:str,
                  max_length=64,
                  early_stopping=True,
                  no_repeat_ngram_size=3,
@@ -107,14 +132,18 @@ class CNNTransformerTrainer(TransformerTrainer):
         # Save processing classes
         self._model = model
         self._processor = processor
-        self._trainer = trainer
+        self._training_args = self.set_up_trainer_args_class(
+            predict_with_generate, eval_strategy, per_device_train_batch_size,
+            per_device_eval_batch_size, fp16, output_dir, logging_steps, save_steps,
+            eval_steps, disable_tqdm, report_to)
+        self._trainer = self.set_up_trainer_class()
 
         # set later
         self._train_dataset = train_dataset
         self._test_dataset = test_dataset
 
         # Save hyperparameters
-        self.save_hyperparameters(ignore=["model", "data_module", "processor", "trainer"], additional=training_args.to_dict())
+        self.save_hyperparameters(ignore=["model", "data_module", "processor", "trainer"])
 
         # set special tokens used for creating the decoder_input_ids from the labels
         self._model.config.decoder_start_token_id = self._processor.tokenizer.cls_token_id
@@ -148,7 +177,7 @@ class CNNTransformerTrainer(TransformerTrainer):
     def get_model(self):
         return self._model
 
-    def train(self, run_name: str, experiment_name:str, model_flavor="pytorch", tags=None):
+    def train(self, run_name: str, experiment_name: str, model_flavor="pytorch", tags=None):
         logger.info(f"MLflow uri is: {mlflow.get_tracking_uri()}")
 
         logger.info(f"Training model with flavor {model_flavor}")
@@ -207,3 +236,45 @@ class CNNTransformerTrainer(TransformerTrainer):
         cer = cer_metric.compute(predictions=pred_str, references=label_str)
 
         return {"cer": cer}
+
+    def set_up_trainer_args_class(self, predict_with_generate:bool, eval_strategy:str, per_device_train_batch_size:int,
+                                  per_device_eval_batch_size:int, fp16:bool, output_dir:str, logging_steps:int,
+                                  save_steps:int, eval_steps:int, disable_tqdm:bool, report_to:str):
+        """
+        Set up a trainer args class Seq2SeqTrainingArguments from a library the huggingfaces "transformers"
+
+        :return: Seq2SeqTrainingArguments
+        """
+
+        training_args = Seq2SeqTrainingArguments(
+            predict_with_generate=predict_with_generate,
+            eval_strategy=eval_strategy,
+            per_device_train_batch_size=per_device_train_batch_size,
+            per_device_eval_batch_size=per_device_eval_batch_size,
+            fp16=fp16,
+            output_dir=output_dir,
+            logging_steps=logging_steps,
+            save_steps=save_steps,
+            eval_steps=eval_steps,
+            disable_tqdm=disable_tqdm,
+            report_to=report_to,
+        )
+
+        return training_args
+
+    def set_up_trainer_class(self):
+        """
+        Set up a trainer class Seq2SeqTrainer from a library from huggingfaces "transformers"
+        """
+
+        trainer = Seq2SeqTrainer(
+            model=self.get_model(),
+            processing_class=self.get_processor(),
+            args=self._training_args,
+            compute_metrics=self.compute_metrics,
+            train_dataset=self._train_dataset,
+            eval_dataset=self._test_dataset,
+            data_collator=default_data_collator
+        )
+
+        return trainer

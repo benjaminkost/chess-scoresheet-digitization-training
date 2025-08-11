@@ -1,6 +1,6 @@
 import logging
 
-from src.scripts.scripts_for_steps.trainer_module import TransformerTrainer
+from src.scripts.scripts_for_steps.trainer_module import TransformerTrainerWrapper
 
 WHITE = "\033[37m"
 RESET = "\033[0m"
@@ -20,7 +20,7 @@ handler.setFormatter(formatter)
 # Handler for Logger added
 logger.addHandler(handler)
 
-def train_transformer_model(trainer_class: TransformerTrainer, run_name: str, experiment_name:str, model_flavor="pytorch", tags=None):
+def train_transformer_model(trainer: TransformerTrainerWrapper, run_name: str, experiment_name:str, model_flavor="pytorch", tags=None):
     logger.info("Training step started")
 
-    trainer_class.train(run_name, experiment_name, model_flavor, tags)
+    trainer.train(run_name, experiment_name, model_flavor, tags)

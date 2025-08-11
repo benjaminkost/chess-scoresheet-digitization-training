@@ -31,5 +31,8 @@ def ingest_data_from_hf(owner:str, dataset_name:str):
         if dataset is None or "train" not in dataset:
             raise ValueError("Invalid dataset structure")
 
+        return dataset
+
     except Exception as e:
         logger.error(f"Error loading dataset: {str(e)}")
+        raise e
