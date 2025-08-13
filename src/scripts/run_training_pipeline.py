@@ -1,4 +1,4 @@
-from transformers import VisionEncoderDecoderModel
+from transformers import TrOCRProcessor
 from src.scripts.pipelines.training_pipeline import training_pipeline_without_preprocessing_for_transformer_models
 
 def run_training_pipeline():
@@ -12,7 +12,7 @@ def run_training_pipeline():
 
     ## For Trainer, Processor and Model
     processor_name = "trocr-base-handwritten-chess-notation-tokenizer"
-    processor = VisionEncoderDecoderModel.from_pretrained(f"{owner}/{processor_name}")
+    processor = TrOCRProcessor.from_pretrained(f"{owner}/{processor_name}")
     model_name = "TrOCR-Base-Fined-On-HCS"
 
     run_name = "Model-TrOCR-Base-Fined-On-HCS-Training-Nr_1"
