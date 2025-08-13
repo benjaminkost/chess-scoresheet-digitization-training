@@ -4,8 +4,7 @@ from abc import ABC, abstractmethod
 from datasets import Dataset
 from evaluate import load
 import mlflow
-from transformers import TrainingArguments, ProcessorMixin, VisionEncoderDecoderModel, Trainer as ML_Trainer, \
-    Seq2SeqTrainingArguments, default_data_collator, Seq2SeqTrainer
+from transformers import ProcessorMixin, VisionEncoderDecoderModel, Seq2SeqTrainingArguments, default_data_collator, Seq2SeqTrainer
 from src.scripts.scripts_for_steps.hyperparameter_util import ModelHyperparameters
 
 # Logger definition
@@ -29,7 +28,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-class Trainer(ABC, ModelHyperparameters):
+class Trainer(ModelHyperparameters, ABC):
     #getter/setter
     @abstractmethod
     def get_model(self):
