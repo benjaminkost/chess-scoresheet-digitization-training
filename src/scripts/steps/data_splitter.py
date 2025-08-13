@@ -1,4 +1,8 @@
 import logging
+from typing import Any
+
+from datasets import Dataset
+
 from src.scripts.scripts_for_steps.data_splitter_strategy import DataSplittingStrategy, SimpleDataSplittingStrategy
 
 WHITE = "\033[37m"
@@ -19,7 +23,7 @@ handler.setFormatter(formatter)
 # Handler for Logger added
 logger.addHandler(handler)
 
-def split_train_test(dataset, split, feature_column, target_column):
+def split_train_test(dataset, split, feature_column, target_column) -> tuple[Dataset, Dataset] | None:
     """
     Split the dataset into train and test sets.
 
@@ -29,8 +33,11 @@ def split_train_test(dataset, split, feature_column, target_column):
     try:
         X_train, X_test, y_train, y_test = data_splitter.split_data(dataset, split, feature_column, target_column)
 
-        train_dataset = convert_feature_label_lists_into_dict(X_train, y_train, feature_column, target_column)
-        test_dataset = convert_feature_label_lists_into_dict(X_test, y_test, feature_column, target_column)
+        train_dict = convert_feature_label_lists_into_dict(X_train, y_train, feature_column, target_column)
+        test_dict = convert_feature_label_lists_into_dict(X_test, y_test, feature_column, target_column)
+
+        train_dataset = Dataset.from_dict(train_dict)
+        test_dataset = Dataset.from_dict(test_dict)
 
         return train_dataset, test_dataset
     except Exception as e:
