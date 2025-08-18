@@ -126,11 +126,12 @@ class CNNTransformerTrainer(TransformerTrainerWrapper):
             predict_with_generate, eval_strategy, per_device_train_batch_size,
             per_device_eval_batch_size, fp16, output_dir, logging_steps, save_steps,
             eval_steps, disable_tqdm, report_to)
-        self._trainer = self.set_up_trainer_class()
 
         # set later
         self._train_dataset = train_dataset
         self._test_dataset = test_dataset
+
+        self._trainer = self.set_up_trainer_class()
 
         # Save hyperparameters
         self.save_hyperparameters(ignore=["model", "data_module", "processor", "trainer"])

@@ -25,7 +25,9 @@ handler.setFormatter(formatter)
 # Handler for Logger added
 logger.addHandler(handler)
 
-def training_pipeline_without_preprocessing_for_transformer_models(owner:str, dataset_name:str, split:str, feature_column:str, target_column:str, processor, model_name: str, run_name: str, experiment_name:str, model_flavor:str, tags,
+def training_pipeline_without_preprocessing_for_transformer_models(owner:str, dataset_name:str, split:str, feature_column:str, target_column:str, processor, run_name: str, experiment_name:str, model_flavor:str, tags:list,
+                                                                   model_name=None,
+                                                                   model=None,
                                                                    predict_with_generate=True,
                                                                    eval_strategy="steps",
                                                                    per_device_train_batch_size=8,
@@ -59,7 +61,8 @@ def training_pipeline_without_preprocessing_for_transformer_models(owner:str, da
     encoded_test_dataset = encode_dataset(processor, test_dataset, feature_column, target_column)
 
     # Load model
-    model = load_model(model_name)
+    if model is None:
+        model = load_model(model_name)
 
     # train
     trainer = CNNTransformerTrainer(
