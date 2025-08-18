@@ -54,11 +54,11 @@ def training_pipeline_without_preprocessing_for_transformer_models(owner:str, da
 
     # Split dataset
     logger.info(f"Test if module was newly imported successfully")
-    train_dataset, test_dataset = split_train_test(raw_dataset, split, feature_column, target_column)
+    X_train, X_test, y_train, y_test = split_train_test(raw_dataset, split, feature_column, target_column)
 
     # Encode datasets
-    encoded_train_dataset = encode_dataset(processor, train_dataset, feature_column, target_column)
-    encoded_test_dataset = encode_dataset(processor, test_dataset, feature_column, target_column)
+    encoded_train_dataset = encode_dataset(processor, X_train, y_train)
+    encoded_test_dataset = encode_dataset(processor, X_test, y_test)
 
     # Load model
     if model is None:

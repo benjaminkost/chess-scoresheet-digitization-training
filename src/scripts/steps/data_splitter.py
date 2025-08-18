@@ -22,7 +22,21 @@ handler.setFormatter(formatter)
 # Handler for Logger added
 logger.addHandler(handler)
 
-def split_train_test(dataset, split, feature_column, target_column) -> tuple[Dataset, Dataset] | None:
+def split_train_test(dataset, split, feature_column, target_column):
+    """
+    Split the dataset into train and test sets.
+
+    """
+    data_splitter = SimpleDataSplittingStrategy()
+
+    try:
+        X_train, X_test, y_train, y_test = data_splitter.split_data(dataset, split, feature_column, target_column)
+
+        return X_train, X_test, y_train, y_test
+    except Exception as e:
+        logger.error(f"Dataset was not found, cannot split into train and test sets. Error: {e}")
+
+def split_train_test_dataset(dataset, split, feature_column, target_column) -> tuple[Dataset, Dataset] | None:
     """
     Split the dataset into train and test sets.
 

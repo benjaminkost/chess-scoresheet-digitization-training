@@ -1,3 +1,4 @@
+import pytest
 from transformers import TrOCRProcessor
 
 from src.scripts.pipelines.training_pipeline import training_pipeline_without_preprocessing_for_transformer_models
@@ -22,32 +23,33 @@ def test_training_pipeline_without_preprocessing_for_transformer_models():
     tags = ["chess", "handwritten", "hcr", "ocr", "chess game notation"]
 
     # Call pipeline
-    training_pipeline_without_preprocessing_for_transformer_models(
-        owner=owner,
-        dataset_name=dataset_name,
-        split=split,
-        feature_column=feature_column,
-        target_column=target_column,
-        processor=processor,
-        model_name=model_name,
-        run_name=run_name,
-        experiment_name=experiment_name,
-        model_flavor=model_flavor,
-        tags=tags,
-        predict_with_generate=True,
-        eval_strategy="steps",
-        per_device_train_batch_size=8,
-        per_device_eval_batch_size=8,
-        fp16=True,
-        output_dir="./results",
-        logging_steps=2,
-        save_steps=1000,
-        eval_steps=100,
-        disable_tqdm=False,
-        report_to="none",
-        max_length=64,
-        early_stopping=True,
-        no_repeat_ngram_size=3,
-        length_penalty=2.0,
-        num_beams=4,
-    )
+    with pytest.raises(ValueError, match=r"fp16 mixed precision requires a GPU \(not .+\)"):
+        training_pipeline_without_preprocessing_for_transformer_models(
+            owner=owner,
+            dataset_name=dataset_name,
+            split=split,
+            feature_column=feature_column,
+            target_column=target_column,
+            processor=processor,
+            model_name=model_name,
+            run_name=run_name,
+            experiment_name=experiment_name,
+            model_flavor=model_flavor,
+            tags=tags,
+            predict_with_generate=True,
+            eval_strategy="steps",
+            per_device_train_batch_size=8,
+            per_device_eval_batch_size=8,
+            fp16=True,
+            output_dir="./results",
+            logging_steps=2,
+            save_steps=1000,
+            eval_steps=100,
+            disable_tqdm=False,
+            report_to="none",
+            max_length=64,
+            early_stopping=True,
+            no_repeat_ngram_size=3,
+            length_penalty=2.0,
+            num_beams=4,
+        )

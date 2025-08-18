@@ -39,8 +39,8 @@ class PreprocessingStrategy(ABC):
 
 class EncodingStrategy(ABC):
     @abstractmethod
-    def encode_dataset(self, dataset, feature_column: str, target_column: str):
-        """Abstract method to encode an image dataset so the images and the labels are encoded"""
+    def encode_dataset(self, X:list, y:list):
+        """Abstract method to encode a feature and label"""
         pass
 
 # Utils
@@ -673,7 +673,19 @@ class TrOCREncoder(EncodingStrategy):
         self._processor = processor
         self._max_target_length = max_target_length
 
-    def encode_dataset(self, dataset, feature_column: str, target_column: str):
+    def encode_dataset(self, X:list, y:list) -> Dataset:
+        """
+        Uses the processor to encode the images as pixel values and the labels as a list of tokens (integers).
+
+
+        :return: dataset with encoded images and labels
+        """
+
+        encoded_dataset = DatasetEncoder(X=X, y=y, processor=self._processor)
+
+        return encoded_dataset
+
+    def encode_dataset_in_place(self, dataset, feature_column: str, target_column: str):
         """
         Uses the processor to encode the images as pixel values and the labels as a list of tokens (integers).
 
@@ -726,3 +738,30 @@ class TrOCREncoder(EncodingStrategy):
         })
 
         return encoded_dataset
+
+
+class DatasetEncoder(Dataset):
+    def __init__(self, X, y, processor, max_target_length=128):
+        self.X = X
+        self.y = y
+        self.processor = processor
+        self.max_target_length = max_target_length
+
+    def __len__(self):
+        return len(self.X)
+
+    def __getitem__(self, idx):
+        # get text
+        text = self.y[idx]
+        # prepare image (i.e. resize + normalize)
+        image = self.X[idx].convert("RGB")
+        pixel_values = self.processor(image, return_tensors="pt").pixel_values
+        # add labels (input_ids) by encoding the text
+        labels = self.processor.tokenizer(text,
+                                          padding="max_length",
+                                          max_length=self.max_target_length).input_ids
+        # important: make sure that PAD tokens are ignored by the loss function
+        labels = [label if label != self.processor.tokenizer.pad_token_id else -100 for label in labels]
+
+        encoding = {"pixel_values": pixel_values.squeeze(), "labels": torch.tensor(labels)}
+        return encoding
