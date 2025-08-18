@@ -9,6 +9,7 @@ from PIL import Image, PngImagePlugin
 import cv2
 import numpy as np
 from datasets import Dataset, DatasetDict, Features, Value, Image as HFImage
+from torch.utils.data import Dataset as TorchDataset
 
 # Configure Logger:
 # ANSI Escape Code for white letters
@@ -740,7 +741,7 @@ class TrOCREncoder(EncodingStrategy):
         return encoded_dataset
 
 
-class DatasetEncoder(Dataset):
+class DatasetEncoder(TorchDataset):
     def __init__(self, X, y, processor, max_target_length=128):
         self.X = X
         self.y = y
