@@ -1,5 +1,4 @@
 import logging
-from typing import Any
 
 from datasets import Dataset
 
@@ -33,10 +32,17 @@ def split_train_test(dataset, split, feature_column, target_column) -> tuple[Dat
     try:
         X_train, X_test, y_train, y_test = data_splitter.split_data(dataset, split, feature_column, target_column)
 
-        logger.info(f'Created train and test dataset with train shape {X_train.shape} and shape {X_test.shape}')
+        logger.info(f'Created train and test dataset with train length {len(X_train)} and test length {len(X_test)}')
 
-        train_dict = convert_feature_label_lists_into_dict(X_train, y_train, feature_column, target_column)
-        test_dict = convert_feature_label_lists_into_dict(X_test, y_test, feature_column, target_column)
+        train_dict = {
+            "image": X_train,
+            "label": y_train
+        }
+
+        test_dict = {
+            "image": X_test,
+            "label": y_test
+        }
 
         logger.info(f'Created train and test dict' )
 
@@ -47,21 +53,4 @@ def split_train_test(dataset, split, feature_column, target_column) -> tuple[Dat
 
         return train_dataset, test_dataset
     except Exception as e:
-        logger.error(f"Dataset was not found, cannot split into train and test sets. Error: {e}")
-
-
-def convert_feature_label_lists_into_dict(feature_list: list, label_list: list, feature_name: str, label_name: str):
-    """
-    Convert the feature list and the corresponding label list into a dictionary.
-
-    :param feature_list: list of pixel values per image
-    :param label_list: list of tokens for each label
-
-    """
-    res_dataset = {}
-
-    for feature, label in zip(feature_list, label_list):
-        res_dataset[feature_name] = feature
-        res_dataset[label_name] = label
-
-    return res_dataset
+        logger.error(f"Error: {e}")

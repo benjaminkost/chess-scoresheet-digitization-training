@@ -44,29 +44,20 @@ class Trainer(ModelHyperparameters, ABC):
 
     # business logic
     @abstractmethod
-    def train(self, run_name: str, experiment_name: str, model_flavor="pytorch", tags=None):
+    def train(self, run_name: str, experiment_name: str, model_flavor="pytorch", tags=None) -> None:
+        """
+        Train the model
+
+        :param run_name: Name of the mlflow run
+        :param experiment_name: Name of the mlflow experiment
+        :param model_flavor: Type of model to train (pytorch, keras, pyfunc etc.)
+        :param tags: Tags that the run should have in mlflow
+        :return: None (model is tracked in mlflow)
+        """
         pass
 
 
 class TransformerTrainerWrapper(Trainer, ABC):
-
-    @abstractmethod
-    def __init__(self,
-                 train_dataset: Dataset,
-                 test_dataset: Dataset,
-                 model,
-                 processor,
-                 trainer=None,
-                 training_args=None
-                 ):
-        self._model = model
-        self._processor = processor
-        self._trainer = trainer
-        self._training_args = training_args
-
-        # Set Datasets
-        self._train_dataset = train_dataset
-        self._test_dataset = test_dataset
 
     # getter/setter
     @abstractmethod
@@ -82,7 +73,7 @@ class TransformerTrainerWrapper(Trainer, ABC):
         pass
 
     # business logic
-    def compute_metrics(self, pred):
+    def compute_metrics(self, pred) -> dict:
         """
         Compute metrics based on the prediction result.
 
@@ -91,7 +82,7 @@ class TransformerTrainerWrapper(Trainer, ABC):
         """
         pass
 
-    def set_up_trainer_args_class(self):
+    def set_up_trainer_args_class(self, *args, **kwargs):
         """
         Set up a trainer args class from a library like huggingfaces "transformers"
         """
@@ -217,7 +208,7 @@ class CNNTransformerTrainer(TransformerTrainerWrapper):
                 for index, tag in enumerate(tags):
                     mlflow.log_metric(tag, tags[index])
 
-    def compute_metrics(self, pred):
+    def compute_metrics(self, pred) -> dict:
         """
         Compute metrics based on the prediction result.
 
@@ -238,7 +229,7 @@ class CNNTransformerTrainer(TransformerTrainerWrapper):
 
     def set_up_trainer_args_class(self, predict_with_generate:bool, eval_strategy:str, per_device_train_batch_size:int,
                                   per_device_eval_batch_size:int, fp16:bool, output_dir:str, logging_steps:int,
-                                  save_steps:int, eval_steps:int, disable_tqdm:bool, report_to:str):
+                                  save_steps:int, eval_steps:int, disable_tqdm:bool, report_to:str) -> Seq2SeqTrainingArguments:
         """
         Set up a trainer args class Seq2SeqTrainingArguments from a library the huggingfaces "transformers"
 
