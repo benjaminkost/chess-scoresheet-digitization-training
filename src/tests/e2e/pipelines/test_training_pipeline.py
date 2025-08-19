@@ -20,7 +20,6 @@ def test_training_pipeline_without_preprocessing_for_transformer_models():
     run_name = "Model-TrOCR-Base-Fined-On-HCS-Training-Nr_1"
     experiment_name = "Train for model digitalizing hand written chess game notations"
     model_flavor = "pytorch"
-    tags = ["chess", "handwritten", "hcr", "ocr", "chess game notation"]
 
     # Call pipeline
     with pytest.raises(ValueError, match=r"fp16 mixed precision requires a GPU \(not .+\)"):

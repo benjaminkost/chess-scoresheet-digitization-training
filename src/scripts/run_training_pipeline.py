@@ -18,7 +18,6 @@ def run_training_pipeline():
     run_name = "Model-TrOCR-Base-Fined-On-HCS-Training-Nr_1"
     experiment_name = "Train for model digitalizing hand written chess game notations"
     model_flavor = "pytorch"
-    tags = ["chess", "handwritten", "hcr", "ocr", "chess game notation"]
 
     # Call pipeline
     training_pipeline_without_preprocessing_for_transformer_models(
@@ -32,7 +31,6 @@ def run_training_pipeline():
         run_name=run_name,
         experiment_name=experiment_name,
         model_flavor=model_flavor,
-        tags=tags,
         predict_with_generate=True,
         eval_strategy="steps",
         per_device_train_batch_size=8,

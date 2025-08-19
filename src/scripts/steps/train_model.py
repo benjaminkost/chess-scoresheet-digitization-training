@@ -20,7 +20,7 @@ handler.setFormatter(formatter)
 # Handler for Logger added
 logger.addHandler(handler)
 
-def train_transformer_model(trainer: TransformerTrainerWrapper, run_name: str, experiment_name:str, model_flavor="pytorch", tags=None):
+def train_transformer_model(trainer: TransformerTrainerWrapper, run_name: str, experiment_name:str, model_flavor="pytorch"):
     logger.info("Training step started")
 
-    trainer.train(run_name, experiment_name, model_flavor, tags)
+    trainer.train(run_name, experiment_name, model_flavor)

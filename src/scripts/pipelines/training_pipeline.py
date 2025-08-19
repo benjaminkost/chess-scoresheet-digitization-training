@@ -25,7 +25,7 @@ handler.setFormatter(formatter)
 # Handler for Logger added
 logger.addHandler(handler)
 
-def training_pipeline_without_preprocessing_for_transformer_models(owner:str, dataset_name:str, split:str, feature_column:str, target_column:str, processor, run_name: str, experiment_name:str, model_flavor:str, tags:list,
+def training_pipeline_without_preprocessing_for_transformer_models(owner:str, dataset_name:str, split:str, feature_column:str, target_column:str, processor, run_name: str, experiment_name:str, model_flavor:str,
                                                                    model_name=None,
                                                                    model=None,
                                                                    predict_with_generate=True,
@@ -88,4 +88,4 @@ def training_pipeline_without_preprocessing_for_transformer_models(owner:str, da
         num_beams = num_beams,
     )
 
-    train_transformer_model(trainer, run_name, experiment_name, model_flavor, tags)
+    train_transformer_model(trainer, run_name, experiment_name, model_flavor)
