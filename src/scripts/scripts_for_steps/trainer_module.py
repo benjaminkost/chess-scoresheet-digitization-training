@@ -44,14 +44,13 @@ class Trainer(ModelHyperparameters, ABC):
 
     # business logic
     @abstractmethod
-    def train(self, run_name: str, experiment_name: str, model_flavor="pytorch", tags=None) -> None:
+    def train(self, run_name: str, experiment_name: str, model_flavor="pytorch") -> None:
         """
         Train the model
 
         :param run_name: Name of the mlflow run
         :param experiment_name: Name of the mlflow experiment
         :param model_flavor: Type of model to train (pytorch, keras, pyfunc etc.)
-        :param tags: Tags that the run should have in mlflow
         :return: None (model is tracked in mlflow)
         """
         pass
@@ -168,30 +167,24 @@ class CNNTransformerTrainer(TransformerTrainerWrapper):
     def get_model(self):
         return self._model
 
-    def train(self, run_name: str, experiment_name: str, model_flavor="pytorch", tags=None):
+    def train(self, run_name: str, experiment_name: str, model_flavor="pytorch"):
         logger.info(f"MLflow uri is: {mlflow.get_tracking_uri()}")
 
         logger.info(f"Training model with flavor {model_flavor}")
 
         mlflow.set_experiment(experiment_name)
 
-        logger.info(f"MLflow experiment \"Experiment\" {experiment_name} was created")
+        logger.info(f"MLflow experiment set to '{experiment_name}'")
+
+        # Log parameters, metrics, model signature
+        mlflow.autolog()
+
+        # Load model
+        model = self.get_model()
+
+        logger.info(f"Model was loaded")
 
         with mlflow.start_run(run_name=run_name):
-            # Log parameters
-            if self.get_training_args() is not None:
-                for arg_name, arg_value in vars(self.get_training_args()).items():
-                    try:
-                        mlflow.log_params(arg_name, arg_value)
-
-                        logger.info(f"Logged parameter {arg_name} was set to {arg_value}")
-                    except:
-                        continue
-
-            # Load model
-            model = self.get_model()
-
-            logger.info(f"Model was loaded")
 
             # Train model
             logger.info(f"Training starting")
@@ -203,11 +196,6 @@ class CNNTransformerTrainer(TransformerTrainerWrapper):
             model_metadata = mlflow.pytorch.log_model(model, artifact_path="model")
 
             logger.info(f"Model was logged with metadata: {model_metadata}")
-
-            # Set tags
-            if tags is not None:
-                for index, tag in enumerate(tags):
-                    mlflow.log_metric(tag, tags[index])
 
     def compute_metrics(self, pred) -> dict:
         """
