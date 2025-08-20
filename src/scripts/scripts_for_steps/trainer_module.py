@@ -192,8 +192,6 @@ class CNNTransformerTrainer(TransformerTrainerWrapper):
 
             logger.info(f"Model was trained")
 
-
-
             unwrapped_model = self.get_trainer().accelerator.unwrap_model(model)
             model_metadata = mlflow.pytorch.log_model(unwrapped_model, artifact_path="model")
 
