@@ -62,6 +62,7 @@ def training_pipeline_without_preprocessing_for_transformer_models(owner:str, da
 
     # Load model
     if model is None:
+        logger.info(f"Loading model from model_name parameter: '{model_name}'")
         model = load_model(model_name)
 
     # train
