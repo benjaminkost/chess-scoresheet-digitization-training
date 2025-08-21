@@ -1,7 +1,8 @@
 import os
-import dagshub
 from dotenv import load_dotenv
 from src.scripts.pipelines.deployment_pipeline import deployment_pipeline
+from src.scripts.steps.connect_to_dagshub import connect_to_dagshub
+
 
 def run_main():
     """Run the image predictor deployment pipeline"""
@@ -16,7 +17,7 @@ def run_main():
     docker_image_name = env_images
 
     # Set up mlflow experiment enviroment to dagshub
-    dagshub.init(repo_owner=os.environ["DAGSHUB_MLFLOW_TRACKING_USERNAME"], repo_name=os.environ["DAGSHUB_REPOSITORY"], mlflow=True)
+    connect_to_dagshub()
 
     # run deployment pipeline
     deployment_pipeline(docker_image_name, model_name)

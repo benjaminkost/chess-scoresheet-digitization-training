@@ -1,6 +1,5 @@
 import logging
 import os
-import dagshub
 import mlflow
 from dotenv import load_dotenv
 from transformers import VisionEncoderDecoderModel
@@ -20,7 +19,7 @@ def load_model(model_name: str):
     # set mlflow tracking uri
     load_dotenv()
 
-    dagshub.init(repo_owner=os.getenv("DAGSHUB_MLFLOW_TRACKING_USERNAME"), repo_name=os.environ["DAGSHUB_REPOSITORY"], mlflow=True)
+    connect_to_dagshub()
 
     # Get the latest version for the model
     logger.info(f"Getting latest version for model: {model_name}")

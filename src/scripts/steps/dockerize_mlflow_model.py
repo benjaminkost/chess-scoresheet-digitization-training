@@ -3,15 +3,17 @@ import os
 import subprocess
 import mlflow
 from dotenv import load_dotenv
-import dagshub
+
+from src.scripts.steps.connect_to_dagshub import connect_to_dagshub
+
 
 def dockerize_mlflow_model_with_cli(docker_image_name, mlflow_model_name: str):
-    dagshub.init(repo_owner=os.environ["DAGSHUB_MLFLOW_TRACKING_USERNAME"], repo_name=os.environ["DAGSHUB_REPOSITORY"], mlflow=True)
+    connect_to_dagshub()
 
     if len(docker_image_name.split("/")) != 3:
         load_dotenv()
-        docker_username = os.environ["DOCKER_USERNAME"]
-        docker_image_version = os.environ["DOCKER_IMAGE_VERSION"]
+        docker_username = os.getenv("DOCKER_USERNAME")
+        docker_image_version = os.getenv("DOCKER_IMAGE_VERSION")
 
         docker_image_name = f"{docker_username}/{docker_image_name}:{docker_image_version}"
 
@@ -44,12 +46,12 @@ def dockerize_mlflow_model_with_cli(docker_image_name, mlflow_model_name: str):
         logging.info(f"Creating docker image {docker_image_name} was successful:\n{result.stderr}")
 
 def dockerize_mlflow_model_with_python(docker_image_name, mlflow_model_name: str):
-    dagshub.init(repo_owner=os.environ["DAGSHUB_MLFLOW_TRACKING_USERNAME"], repo_name=os.environ["DAGSHUB_REPOSITORY"], mlflow=True)
+    connect_to_dagshub()
 
     if len(docker_image_name.split("/")) != 3:
         load_dotenv()
-        docker_username = os.environ["DOCKER_USERNAME"]
-        docker_image_version = os.environ["DOCKER_IMAGE_VERSION"]
+        docker_username = os.getenv("DOCKER_USERNAME")
+        docker_image_version = os.getenv("DOCKER_IMAGE_VERSION")
 
         docker_image_name = f"{docker_username}/{docker_image_name}:{docker_image_version}"
 
