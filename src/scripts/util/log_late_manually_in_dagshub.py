@@ -1,13 +1,14 @@
-import os
-import dagshub
 import mlflow
 from dotenv import load_dotenv
 from transformers import VisionEncoderDecoderModel
 from transformers import Seq2SeqTrainingArguments
 
+from src.scripts.steps.connect_to_dagshub import connect_to_dagshub
+
+
 def log_manually_single_run_in_dagshub(experiment_name, dir, run_name, args=None):
     load_dotenv()
-    dagshub.init(repo_owner=os.environ["DAGSHUB_MLFLOW_TRACKING_USERNAME"], repo_name=os.environ["DAGSHUB_REPOSITORY"], mlflow=True)
+    connect_to_dagshub()
 
     print(mlflow.get_tracking_uri())
 
