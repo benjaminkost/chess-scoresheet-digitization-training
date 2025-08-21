@@ -1,7 +1,7 @@
 import logging
 from abc import ABC, abstractmethod
 import datasets
-from datasets import Dataset
+from datasets import Dataset, DatasetDict
 from datasets.exceptions import DatasetNotFoundError
 
 # ANSI Escape Code for white letters
@@ -51,7 +51,7 @@ class DataIngestorStrategy(ABC):
 
 # Implement a concrete class for Image Data Ingestion
 class HuggingFaceImageDataIngestorStrategy(DataIngestorStrategy):
-    def ingest_data(self, owner: str, dataset_name: str) -> Dataset:
+    def ingest_data(self, owner: str, dataset_name: str) -> None | Dataset | DatasetDict:
         """
         Loads an image dataset from Hugging Face.
 
