@@ -1,6 +1,4 @@
 from pathlib import Path
-
-import mlflow
 from transformers import VisionEncoderDecoderModel
 
 from src.scripts.pipelines.tracking_model_pipeline import tracking_standard_model_pipeline

@@ -6,7 +6,7 @@ import subprocess
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 def push_docker_image_to_docker_hub():
-    script_path = Path(__file__).parent.parent / "images_push_to_dockerhub.sh"
+    script_path = Path(__file__).parent.parent.parent.parent / "images_push_to_dockerhub.sh"
 
     if not script_path.exists():
         logging.error(f"Bash script not found: {script_path}")

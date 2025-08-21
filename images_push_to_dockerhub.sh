@@ -10,7 +10,8 @@ echo "Logging in to Docker Hub..."
 echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
 # Build docker images from MLflow models
-mlflow models build-docker --name "${IMAGE}" --model-uri "models:/${MODEL_NAME}/${MODEL_VERSION}"
+echo "Building the MLflow model..."
+mlflow models build-docker --name "${DOCKER_IMAGE_NAME}" --model-uri "models:/${MODEL_NAME}/${MODEL_VERSION}"
 
 echo "Pushing ${IMAGE} to Docker Hub..."
-docker push "${DOCKER_USERNAME}/${IMAGE}:${DOCKER_IMAGE_VERSION}"
+docker push "${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_VERSION}"
