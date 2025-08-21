@@ -3,10 +3,10 @@ from torch import nn
 from transformers import TrOCRProcessor, VisionEncoderDecoderModel
 
 from evaluation_graphs import ProgressBoard
-from hyperparameter_util import ModelHyperparameter
+from hyperparameter_util import ModelHyperparameters
 
 # Base classes
-class Module(nn.Module, ModelHyperparameter):
+class Module(nn.Module, ModelHyperparameters):
     """The base class of models."""
     def __init__(self, plot_train_per_epoch=2, plot_valid_per_epoch=1):
         super().__init__()
