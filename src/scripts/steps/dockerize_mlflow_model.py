@@ -3,15 +3,31 @@ import os
 import subprocess
 import mlflow
 from dotenv import load_dotenv
-import dagshub
+
+WHITE = "\033[37m"
+RESET = "\033[0m"
+
+# Logger configure
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+# Console-Handler
+handler = logging.StreamHandler()
+handler.setLevel(logging.DEBUG)
+
+# Formatter with ANSI Escape Code for white letters
+formatter = logging.Formatter(f'{WHITE}%(asctime)s - %(name)s - %(levelname)s - %(message)s{RESET}')
+handler.setFormatter(formatter)
+
+# Handler for Logger added
+logger.addHandler(handler)
 
 def dockerize_mlflow_model_with_cli(docker_image_name, mlflow_model_name: str):
-    dagshub.init(repo_owner=os.environ["DAGSHUB_MLFLOW_TRACKING_USERNAME"], repo_name=os.environ["DAGSHUB_REPOSITORY"], mlflow=True)
 
     if len(docker_image_name.split("/")) != 3:
         load_dotenv()
-        docker_username = os.environ["DOCKER_USERNAME"]
-        docker_image_version = os.environ["DOCKER_IMAGE_VERSION"]
+        docker_username = os.getenv("DOCKER_USERNAME")
+        docker_image_version = os.getenv("DOCKER_IMAGE_VERSION")
 
         docker_image_name = f"{docker_username}/{docker_image_name}:{docker_image_version}"
 
@@ -23,9 +39,7 @@ def dockerize_mlflow_model_with_cli(docker_image_name, mlflow_model_name: str):
     # Construct the model URI
     model_uri = f'models:/{mlflow_model_name}/{model_version}'
 
-    print(f"model_uri: {model_uri}")
-
-    logging.info(f"model_uri: {model_uri}")
+    logger.info(f"model_uri: {model_uri}")
 
     # Use mlflow command to create a docker image out of a register mlflow model
     cmd = [
@@ -44,12 +58,10 @@ def dockerize_mlflow_model_with_cli(docker_image_name, mlflow_model_name: str):
         logging.info(f"Creating docker image {docker_image_name} was successful:\n{result.stderr}")
 
 def dockerize_mlflow_model_with_python(docker_image_name, mlflow_model_name: str):
-    dagshub.init(repo_owner=os.environ["DAGSHUB_MLFLOW_TRACKING_USERNAME"], repo_name=os.environ["DAGSHUB_REPOSITORY"], mlflow=True)
-
     if len(docker_image_name.split("/")) != 3:
         load_dotenv()
-        docker_username = os.environ["DOCKER_USERNAME"]
-        docker_image_version = os.environ["DOCKER_IMAGE_VERSION"]
+        docker_username = os.getenv("DOCKER_USERNAME")
+        docker_image_version = os.getenv("DOCKER_IMAGE_VERSION")
 
         docker_image_name = f"{docker_username}/{docker_image_name}:{docker_image_version}"
 
@@ -61,9 +73,7 @@ def dockerize_mlflow_model_with_python(docker_image_name, mlflow_model_name: str
     # Construct the model URI
     model_uri = f'models:/{mlflow_model_name}/{model_version}'
 
-    print(f"model_uri: {model_uri}")
-
-    logging.info(f"model_uri: {model_uri}")
+    logger.info(f"model_uri: {model_uri}")
 
     # Use mlflow method
     mlflow.models.build_docker(
@@ -71,7 +81,3 @@ def dockerize_mlflow_model_with_python(docker_image_name, mlflow_model_name: str
         name=docker_image_name,
         enable_mlserver=True
     )
-
-    # mlflow_home="/opt/conda/lib/python3.11/site-packages/mlflow",
-    # extra_pip_requirements=["torch==2.0.1", "transformers==4.51.3", "numpy==1.23.5", "opencv-python==4.11.0.86", "pandas==2.2.3", "Pillow==11.2.1", "scikit-learn==1.6.1", "starlette==0.46.2"]
-    # install_mlflow=False,

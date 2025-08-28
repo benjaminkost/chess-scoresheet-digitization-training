@@ -1,9 +1,9 @@
 import logging
-import os
-import dagshub
 import mlflow
 from dotenv import load_dotenv
 from pathlib import Path
+
+from src.scripts.steps.connect_to_dagshub import connect_to_dagshub
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -13,7 +13,7 @@ def log_register_custom_model(python_model, conda_env, artifacts, artifact_path,
     load_dotenv()
 
     # Set up mlflow experiment enviroment to dagshub
-    dagshub.init(repo_owner=os.environ["DAGSHUB_MLFLOW_TRACKING_USERNAME"], repo_name=os.environ["DAGSHUB_REPOSITORY"], mlflow=True)
+    connect_to_dagshub()
 
     # code path
     code_path = str(Path.cwd() / "mlflow_models")
