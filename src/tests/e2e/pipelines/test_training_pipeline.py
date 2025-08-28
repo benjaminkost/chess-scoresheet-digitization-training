@@ -34,7 +34,6 @@ def test_training_pipeline_without_preprocessing_for_transformer_models():
             run_name=run_name,
             experiment_name=experiment_name,
             model_flavor=model_flavor,
-            tags=tags,
             predict_with_generate=True,
             eval_strategy="steps",
             per_device_train_batch_size=8,

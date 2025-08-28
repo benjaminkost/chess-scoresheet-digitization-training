@@ -4,6 +4,8 @@ import mlflow
 from dotenv import load_dotenv
 from transformers import VisionEncoderDecoderModel
 
+from src.scripts.steps.connect_to_dagshub import connect_to_dagshub
+
 # configure logger
 logging.basicConfig(
     level=logging.INFO,  # Log-Ebene (z. B. DEBUG, INFO, WARNING, ERROR, CRITICAL)

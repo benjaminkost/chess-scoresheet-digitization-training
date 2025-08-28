@@ -7,8 +7,8 @@ class UnprocessedHcsImageLabelDirToDatasetStrategyTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         current_path = Path(__file__).resolve()
-        cls.path_to_image_dir = current_path.parent.parent.parent.parent / "data" /"raw_data"/"unprocessed_hcs_data"/"images"
-        cls.path_to_label_file = current_path.parent.parent.parent.parent /"data"/"raw_data"/"unprocessed_hcs_data"/"training_tags.txt"
+        cls.path_to_image_dir = current_path.parent.parent.parent / "data" /"raw_data"/"unprocessed_hcs_data"/"images"
+        cls.path_to_label_file = current_path.parent.parent.parent /"data"/"raw_data"/"unprocessed_hcs_data"/"training_tags.txt"
 
     def test_create_dict_with_multiple_images_with_move_boxes_and_labels_containing_all_images_return_len_image_count(self):
         # Give
