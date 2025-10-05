@@ -1,7 +1,9 @@
 import logging
 from abc import abstractmethod
 from abc import ABC
-from .image_files_to_dataset_strategy import ImageLabelDirToDatasetStrategy
+from pathlib import Path
+
+from src.scripts.data_to_hf.image_files_to_dataset_strategy import ImageLabelDirToDatasetStrategy
 
 # Logger set-up
 # ANSI Escape Code for white letters
@@ -51,7 +53,7 @@ class HuggingfaceDataVersioning(DataVersioning):
 
         self.dataset_strategy = dataset_strategy
 
-    def upload_dataset(self, path_to_save_dataset: str, path_to_image_dir: str, path_to_label_file: str, owner: str, dataset_name: str):
+    def upload_dataset(self, path_to_save_dataset: Path, path_to_image_dir: Path, path_to_label_file: Path, owner: str, dataset_name: str):
         # Get dataset
         dataset = self.dataset_strategy.get_dataset(path_to_image_dir, path_to_label_file)
 
