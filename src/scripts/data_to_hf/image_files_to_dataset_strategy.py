@@ -209,21 +209,21 @@ class ProcessedHcsImageLabelDirToDatasetStrategy(ImageLabelDirToDatasetStrategy)
         return dataset_processed_hcs
 
 class HSSSDImageLabelDirToDatasetStrategy(ImageLabelDirToDatasetStrategy):
-    def create_dict_for_move_boxes_and_labels(self, image_name: str, df_labels: pd.DataFrame) -> dict:
+    def create_list_for_move_boxes_and_labels(self, image_name: str, df_labels: pd.DataFrame) -> list:
         """
-        Method to create dictionary object of ground truth values for specific image
+        Method to create list object of ground truth values for specific image
         prerequisite: the moves in the ground truth values have to be in the correct move order
 
         :param df_labels: dataframe of labels
         :param image_name: name of the image file
-        :return: dictionary object of the name (string) of the move box and the responding ground truth value
+        :return: list object of the name (string) of the move box and the responding ground truth value
         """
-        res = {}
+        res = []
 
         for index, label in df_labels.iterrows():
             if image_name in label["image"]:
                 # name of move box and the ground truth label are saved in a dict object
-                res[label["image"]] = label["label"]
+                res.append(label["label"])
 
         return res
 
@@ -252,8 +252,9 @@ class HSSSDImageLabelDirToDatasetStrategy(ImageLabelDirToDatasetStrategy):
         for image_name in list_images:
             if ".png" in image_name:
                 image_name = image_name.split(".")[0]
-                temp_dict = self.create_dict_for_move_boxes_and_labels(image_name, df_labels)
+                temp_dict = self.create_list_for_move_boxes_and_labels(image_name, df_labels)
                 res[image_name] = temp_dict
+                logger.info(f"Current size of dictionary object: {len(res)}")
 
         return res
 
@@ -275,13 +276,12 @@ class HSSSDImageLabelDirToDatasetStrategy(ImageLabelDirToDatasetStrategy):
 
         try:
             # Transform data
-            for main_img, move_boxes in img_label_dict.items():
-                temp_labels = []
-                image_path = os.path.join(path_to_image_dir, main_img)
+            for main_img_name, list_of_labels in img_label_dict.items():
+                image_path = os.path.join(path_to_image_dir, f"{main_img_name}.png")
                 if os.path.exists(image_path):
-                    for move_box, label in move_boxes.items():
-                        temp_labels.append(label)
-                    data.append({"image": image_path, "labels": temp_labels})
+                    data.append({"image": image_path, "labels": list_of_labels})
+                else:
+                    logger.error(f"{image_path} does not exist so it is not")
 
                 dataset = Dataset.from_list(data).cast_column("image", Image())
         except Exception as e:
@@ -304,9 +304,15 @@ class HSSSDImageLabelDirToDatasetStrategy(ImageLabelDirToDatasetStrategy):
         """
 
         ## Load Labels regarding their image names
+        logger.info("Starting to create dictionary object out of the images and labels...")
+
         data_dict = self.create_dict_with_multiple_images_with_move_boxes_and_labels(path_to_image_dir, path_to_label_file)
 
+        logger.info(f"Dictionary object successfully created with length {len(data_dict)}")
+
         ## Create dataset object from dict
+        logger.info("Starting to create dataset object...")
+
         dataset = self.create_dataset_from_dict_with_move_boxes(path_to_image_dir, data_dict)
 
         logger.info(f"Dataset created successfully.")
